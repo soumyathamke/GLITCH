@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>REELZ — Watch What's Hot</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --accent: #ff2d55;
+  --accent2: #ff9f0a;
+  --accent3: #30d158;
+  --text: #f5f5f5;
+  --muted: #666;
+  --border: rgba(255,255,255,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 3rem;
+  background: linear-gradient(180deg, rgba(8,8,8,0.98) 0%, transparent 100%);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(255,45,85,0.5);
+}
+
+.logo span { color: var(--text); }
+
+.nav-links {
+  display: flex; gap: 2rem; list-style: none;
+}
+
+.nav-links a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+.nav-right {
+  display: flex; align-items: center; gap: 1rem;
+}
+
+.nav-badge {
+  background: var(--accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255,45,85,0.3); }
+  50% { box-shadow: 0 0 25px rgba(255,45,85,0.7); }
+}
+
+/* ── HERO SLIDER ── */
+.hero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  display: flex; align-items: flex-end;
+  padding: 0 3rem 5rem;
+}
+
+.slide.active { opacity: 1; }
+
+.slide-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.05);
+  transition: transform 8s ease;
+}
+
+.slide.active .slide-bg { transform: scale(1); }
+
+.slide-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(8,8,8,0.95) 0%,
+    rgba(8,8,8,0.7) 40%,
+    rgba(8,8,8,0.2) 70%,
+    transparent 100%
+  );
+}
+
+.slide-content {
+  position: relative; z-index: 2;
+  max-width: 600px;
+}
+
+.slide-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.slide-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  margin-bottom: 0.8rem;
+  color: white;
+}
+
+.slide-title span { color: var(--accent); }
+
+.slide-meta {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.slide-meta .rating {
+  color: var(--accent2);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.slide-cast {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.8rem;
+}
+
+.slide-cast strong { color: white; }
+
+.slide-buzz {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  max-width: 480px;
+}
+
+.slide-buzz em {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.slide-actions {
+  display: flex; gap: 1rem; align-items: center;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.btn-primary:hover { transform: scale(1.04); background: #ff1744; }
+
+.btn-ghost {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover { background: rgba(255,255,255,0.18); }
+
+/* Slider controls */
+.slider-dots {
+  position: absolute;
+  bottom: 2rem; right: 3rem;
+  display: flex; gap: 8px; z-index: 10;
+}
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  width: 24px;
+  background: var(--accent);
+}
+
+.slider-arrows {
+  position: absolute;
+  top: 50%; right: 2rem;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 10;
+}
+
+.arrow {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+
+.arrow:hover { background: var(--accent); border-color: var(--accent); }
+
+/* Slide gradient backgrounds using CSS */
+.slide:nth-child(1) .slide-bg {
+  background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.slide:nth-child(2) .slide-bg {
+  background: linear-gradient(135deg, #1a0000 0%, #3d0000 50%, #1a0a0a 100%);
+}
+.slide:nth-child(3) .slide-bg {
+  background: linear-gradient(135deg, #0a1a0a 0%, #0d2818 50%, #1a3a1a 100%);
+}
+.slide:nth-child(4) .slide-bg {
+  background: linear-gradient(135deg, #1a1a0a 0%, #2d2800 50%, #1a1500 100%);
+}
+
+/* Decorative geometric shapes on slides */
+.slide-shape {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px; height: 480px;
+  border-radius: 16px;
+  overflow: hidden;
+  opacity: 0.85;
+  z-index: 1;
+  box-shadow: -30px 0 80px rgba(0,0,0,0.8);
+}
+
+.slide:nth-child(1) .slide-shape {
+  background: linear-gradient(160deg, #7b2fff, #ff2d55, #ff9f0a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8rem;
+}
+
+.slide:nth-child(2) .slide-shape {
+  background: linear-gradient(160deg, #ff0000, #8b0000, #ff4500);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8rem;
+}
+
+.slide:nth-child(3) .slide-shape {
+  background: linear-gradient(160deg, #00ff88, #00a550, #007a33);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8rem;
+}
+
+.slide:nth-child(4) .slide-shape {
+  background: linear-gradient(160deg, #ffd700, #ff8c00, #ff4500);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8rem;
+}
+
+/* ── SECTION HEADERS ── */
+.section {
+  padding: 4rem 3rem;
+}
+
+.section-header {
+  display: flex; align-items: baseline; gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.section-title span { color: var(--accent); }
+
+.section-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ── CRITICS SECTION ── */
+.critics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.critic-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.4rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.critic-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.critic-card:hover { transform: translateY(-4px); border-color: rgba(255,45,85,0.3); }
+.critic-card:hover::before { transform: scaleX(1); }
+
+.critic-movie {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.critic-score {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.score-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.score-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent2);
+}
+
+.critic-quote {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.critic-quote::before { content: '"'; color: var(--accent); font-style: normal; }
+.critic-quote::after { content: '"'; color: var(--accent); font-style: normal; }
+
+.critic-source {
+  margin-top: 0.6rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── CAST SPOTLIGHT ── */
+.cast-scroll {
+  display: flex; gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+}
+
+.cast-scroll::-webkit-scrollbar { display: none; }
+
+.cast-card {
+  flex-shrink: 0;
+  width: 160px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cast-card:hover { transform: translateY(-6px); }
+
+.cast-avatar {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  margin: 0 auto 0.8rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cast-avatar::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box,
+              linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+  transition: opacity 0.2s;
+  opacity: 0;
+}
+
+.cast-card:hover .cast-avatar::after { opacity: 1; }
+
+.cast-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.cast-role {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.cast-movie {
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+/* Avatar gradients */
+.av1 { background: linear-gradient(135deg, #7b2fff, #ff2d55); }
+.av2 { background: linear-gradient(135deg, #ff9f0a, #ff2d55); }
+.av3 { background: linear-gradient(135deg, #30d158, #00a5e0); }
+.av4 { background: linear-gradient(135deg, #ff2d55, #ff6b6b); }
+.av5 { background: linear-gradient(135deg, #00a5e0, #7b2fff); }
+.av6 { background: linear-gradient(135deg, #ff9f0a, #30d158); }
+.av7 { background: linear-gradient(135deg, #ff2d55, #7b2fff); }
+.av8 { background: linear-gradient(135deg, #30d158, #ff9f0a); }
+
+/* ── BUZZ / FACTS CARDS ── */
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+}
+
+.fact-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.6rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.fact-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,45,85,0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.fact-card-accent {
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 0 16px 0 80px;
+  opacity: 0.15;
+}
+
+.fc-red .fact-card-accent { background: var(--accent); }
+.fc-orange .fact-card-accent { background: var(--accent2); }
+.fc-green .fact-card-accent { background: var(--accent3); }
+.fc-purple .fact-card-accent { background: #7b2fff; }
+.fc-blue .fact-card-accent { background: #00a5e0; }
+
+.fact-emoji { font-size: 2rem; margin-bottom: 0.8rem; display: block; }
+
+.fact-movie-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.fact-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-bottom: 0.8rem;
+}
+
+.fc-red .fact-tag { background: rgba(255,45,85,0.15); color: var(--accent); }
+.fc-orange .fact-tag { background: rgba(255,159,10,0.15); color: var(--accent2); }
+.fc-green .fact-tag { background: rgba(48,209,88,0.15); color: var(--accent3); }
+.fc-purple .fact-tag { background: rgba(123,47,255,0.15); color: #a855f7; }
+.fc-blue .fact-tag { background: rgba(0,165,224,0.15); color: #38bdf8; }
+
+.fact-text {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+}
+
+.fact-text strong { color: white; }
+
+/* ── TICKER ── */
+.ticker-wrap {
+  background: var(--accent);
+  padding: 8px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker {
+  display: flex;
+  animation: ticker 25s linear infinite;
+  white-space: nowrap;
+}
+
+.ticker-item {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 3rem;
+  color: white;
+}
+
+.ticker-item::before { content: "★ "; }
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 2rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.footer-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide.active .slide-content > * {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.slide.active .slide-content > *:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .slide-content > *:nth-child(2) { animation-delay: 0.2s; }
+.slide.active .slide-content > *:nth-child(3) { animation-delay: 0.3s; }
+.slide.active .slide-content > *:nth-child(4) { animation-delay: 0.4s; }
+.slide.active .slide-content > *:nth-child(5) { animation-delay: 0.5s; }
+.slide.active .slide-content > *:nth-child(6) { animation-delay: 0.6s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">REEL<span>Z</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Movies</a></li>
+    <li><a href="#">Series</a></li>
+    <li><a href="#">Trending</a></li>
+    <li><a href="#">New Drops</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-badge">🔥 Live</div>
+  </div>
+</nav>
+
+<!-- HERO SLIDER -->
+<section class="hero" id="hero">
+
+  <div class="slide active">
+    <div class="slide-bg"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-shape">🌌</div>
+    <div class="slide-content">
+      <div class="slide-tag">🔥 Trending #1</div>
+      <h1 class="slide-title">DUNE<br/><span>PART TWO</span></h1>
+      <div class="slide-meta">
+        <span class="rating">⭐ 8.8</span>
+        <span>2024 · Sci-Fi · 2h 46m</span>
+        <span>PG-13</span>
+      </div>
+      <div class="slide-cast">
+        <strong>Timothée Chalamet</strong> &amp; <strong>Zendaya</strong>
+      </div>
+      <p class="slide-buzz">Paul Atreides unites with Chani and the Fremen while on a warpath of revenge. The visuals are <em>absolutely insane</em> — critics are calling it the sci-fi event of the decade.</p>
+      <div class="slide-actions">
+        <button class="btn-primary">▶ Watch Now</button>
+        <button class="btn-ghost">+ Watchlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-bg"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-shape">🩸</div>
+    <div class="slide-content">
+      <div class="slide-tag">💀 Horror Hit</div>
+      <h1 class="slide-title">ALIEN<br/><span>ROMULUS</span></h1>
+      <div class="slide-meta">
+        <span class="rating">⭐ 7.3</span>
+        <span>2024 · Horror · 1h 59m</span>
+        <span>R</span>
+      </div>
+      <div class="slide-cast">
+        <strong>Cailee Spaeny</strong> &amp; <strong>David Jonsson</strong>
+      </div>
+      <p class="slide-buzz">A group of young space colonizers stumble upon a derelict spacecraft. <em>Nightmare fuel</em> that had audiences screaming. The scariest Alien film in decades — no cap.</p>
+      <div class="slide-actions">
+        <button class="btn-primary">▶ Watch Now</button>
+        <button class="btn-ghost">+ Watchlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-bg"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-shape">🤖</div>
+    <div class="slide-content">
+      <div class="slide-tag">🤖 Mind-Bending</div>
+      <h1 class="slide-title">CIVIL<br/><span>WAR</span></h1>
+      <div class="slide-meta">
+        <span class="rating">⭐ 7.2</span>
+        <span>2024 · Thriller · 1h 49m</span>
+        <span>R</span>
+      </div>
+      <div class="slide-cast">
+        <strong>Kirsten Dunst</strong> &amp; <strong>Wagner Moura</strong>
+      </div>
+      <p class="slide-buzz">A team of journalists race across a fractured America during a second civil war. <em>Brutally intense</em> — A24 doing what they do best. Twitter was unhinged for weeks.</p>
+      <div class="slide-actions">
+        <button class="btn-primary">▶ Watch Now</button>
+        <button class="btn-ghost">+ Watchlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-bg"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-shape">🎭</div>
+    <div class="slide-content">
+      <div class="slide-tag">🏆 Award Season</div>
+      <h1 class="slide-title">WICKED<br/><span>2024</span></h1>
+      <div class="slide-meta">
+        <span class="rating">⭐ 7.6</span>
+        <span>2024 · Musical · 2h 40m</span>
+        <span>PG</span>
+      </div>
+      <div class="slide-cast">
+        <strong>Cynthia Erivo</strong> &amp; <strong>Ariana Grande</strong>
+      </div>
+      <p class="slide-buzz">The iconic Broadway musical finally hits the big screen. Ariana Grande as Glinda had everyone <em>absolutely losing it</em>. Defying gravity and expectations — this is the one.</p>
+      <div class="slide-actions">
+        <button class="btn-primary">▶ Watch Now</button>
+        <button class="btn-ghost">+ Watchlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-dots">
+    <div class="dot active" onclick="goToSlide(0)"></div>
+    <div class="dot" onclick="goToSlide(1)"></div>
+    <div class="dot" onclick="goToSlide(2)"></div>
+    <div class="dot" onclick="goToSlide(3)"></div>
+  </div>
+
+  <div class="slider-arrows">
+    <button class="arrow" onclick="prevSlide()">▲</button>
+    <button class="arrow" onclick="nextSlide()">▼</button>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item">Dune 2 breaks box office records</span>
+    <span class="ticker-item">Wicked crosses $700M worldwide</span>
+    <span class="ticker-item">Alien Romulus director's cut dropping soon</span>
+    <span class="ticker-item">Civil War streams exclusively on REELZ</span>
+    <span class="ticker-item">Deadpool 3 already confirmed for sequel</span>
+    <span class="ticker-item">Zendaya wins best actress at Golden Globes</span>
+    <span class="ticker-item">Dune 2 breaks box office records</span>
+    <span class="ticker-item">Wicked crosses $700M worldwide</span>
+    <span class="ticker-item">Alien Romulus director's cut dropping soon</span>
+    <span class="ticker-item">Civil War streams exclusively on REELZ</span>
+    <span class="ticker-item">Deadpool 3 already confirmed for sequel</span>
+    <span class="ticker-item">Zendaya wins best actress at Golden Globes</span>
+  </div>
+</div>
+
+<!-- CRITICS SECTION -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Critics are <span>Screaming</span></h2>
+    <span class="section-sub">What the internet is saying</span>
+  </div>
+  <div class="critics-grid">
+    <div class="critic-card">
+      <div class="critic-movie">Dune: Part Two</div>
+      <div class="critic-score">
+        <div class="score-bar"><div class="score-fill" style="width:97%"></div></div>
+        <span class="score-num">97%</span>
+      </div>
+      <div class="critic-quote">An overwhelming sensory experience. Villeneuve has created the defining sci-fi film of our generation.</div>
+      <div class="critic-source">— Rotten Tomatoes Critics</div>
+    </div>
+    <div class="critic-card">
+      <div class="critic-movie">Wicked</div>
+      <div class="critic-score">
+        <div class="score-bar"><div class="score-fill" style="width:89%"></div></div>
+        <span class="score-num">89%</span>
+      </div>
+      <div class="critic-quote">Ariana Grande is a revelation. This is the musical event of the decade and it delivers on every promise.</div>
+      <div class="critic-source">— Variety</div>
+    </div>
+    <div class="critic-card">
+      <div class="critic-movie">Alien: Romulus</div>
+      <div class="critic-score">
+        <div class="score-bar"><div class="score-fill" style="width:81%"></div></div>
+        <span class="score-num">81%</span>
+      </div>
+      <div class="critic-quote">Terrifying, relentless, and deeply satisfying for fans of the franchise. The creature design is next-level.</div>
+      <div class="critic-source">— Empire Magazine</div>
+    </div>
+    <div class="critic-card">
+      <div class="critic-movie">Civil War</div>
+      <div class="critic-score">
+        <div class="score-bar"><div class="score-fill" style="width:83%"></div></div>
+        <span class="score-num">83%</span>
+      </div>
+      <div class="critic-quote">Deliberately provocative and visually stunning. Alex Garland forces us to confront uncomfortable truths.</div>
+      <div class="critic-source">— The Guardian</div>
+    </div>
+  </div>
+</section>
+
+<!-- CAST SPOTLIGHT -->
+<section class="section" style="padding-top:0">
+  <div class="section-header">
+    <h2 class="section-title">Cast <span>Spotlight</span></h2>
+    <span class="section-sub">Who's in it</span>
+  </div>
+  <div class="cast-scroll">
+    <div class="cast-card">
+      <div class="cast-avatar av1">👨‍🦱</div>
+      <div class="cast-name">Timothée Chalamet</div>
+      <div class="cast-role">Paul Atreides</div>
+      <div class="cast-movie">Dune 2</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av2">👩🏽</div>
+      <div class="cast-name">Zendaya</div>
+      <div class="cast-role">Chani</div>
+      <div class="cast-movie">Dune 2</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av3">👩🏿</div>
+      <div class="cast-name">Cynthia Erivo</div>
+      <div class="cast-role">Elphaba</div>
+      <div class="cast-movie">Wicked</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av4">👱‍♀️</div>
+      <div class="cast-name">Ariana Grande</div>
+      <div class="cast-role">Glinda</div>
+      <div class="cast-movie">Wicked</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av5">👩🏼</div>
+      <div class="cast-name">Cailee Spaeny</div>
+      <div class="cast-role">Rain Carradine</div>
+      <div class="cast-movie">Alien: Romulus</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av6">👩🏻‍🦰</div>
+      <div class="cast-name">Kirsten Dunst</div>
+      <div class="cast-role">Lee Smith</div>
+      <div class="cast-movie">Civil War</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av7">👨🏽</div>
+      <div class="cast-name">Austin Butler</div>
+      <div class="cast-role">Feyd-Rautha</div>
+      <div class="cast-movie">Dune 2</div>
+    </div>
+    <div class="cast-card">
+      <div class="cast-avatar av8">👨🏾</div>
+      <div class="cast-name">David Jonsson</div>
+      <div class="cast-role">Andy</div>
+      <div class="cast-movie">Alien: Romulus</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUZZ / FACTS -->
+<section class="section" style="padding-top:0">
+  <div class="section-header">
+    <h2 class="section-title">Hot <span>Takes</span> & Facts</h2>
+    <span class="section-sub">Things you didn't know</span>
+  </div>
+  <div class="facts-grid">
+    <div class="fact-card fc-red">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">💰</span>
+      <div class="fact-movie-name">Dune: Part Two</div>
+      <span class="fact-tag">Box Office</span>
+      <p class="fact-text">Made over <strong>$711 million</strong> worldwide on a $190M budget. The desert never looked this expensive — or this gorgeous.</p>
+    </div>
+    <div class="fact-card fc-orange">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">🎤</span>
+      <div class="fact-movie-name">Wicked</div>
+      <span class="fact-tag">Fun Fact</span>
+      <p class="fact-text">Ariana Grande and Cynthia Erivo trained for <strong>over a year</strong> for their roles. Ariana called it the hardest thing she's ever done.</p>
+    </div>
+    <div class="fact-card fc-purple">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">👾</span>
+      <div class="fact-movie-name">Alien: Romulus</div>
+      <span class="fact-tag">Behind the Scenes</span>
+      <p class="fact-text">The film uses <strong>practical effects</strong> over CGI wherever possible — including a real full-size xenomorph suit that terrified the cast.</p>
+    </div>
+    <div class="fact-card fc-green">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">📸</span>
+      <div class="fact-movie-name">Civil War</div>
+      <span class="fact-tag">Production</span>
+      <p class="fact-text">Kirsten Dunst's character is based on <strong>real war photographers</strong>. The film was shot in sequence — the cast genuinely didn't know what came next.</p>
+    </div>
+    <div class="fact-card fc-blue">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">🏆</span>
+      <div class="fact-movie-name">Awards Watch</div>
+      <span class="fact-tag">Oscar Season</span>
+      <p class="fact-text">Dune 2 and Wicked are both <strong>frontrunners</strong> at this year's Oscars. Expect a showdown in Best Visual Effects and Best Original Song.</p>
+    </div>
+    <div class="fact-card fc-red">
+      <div class="fact-card-accent"></div>
+      <span class="fact-emoji">🌍</span>
+      <div class="fact-movie-name">Global Buzz</div>
+      <span class="fact-tag">Social Media</span>
+      <p class="fact-text">Dune 2's trailer crossed <strong>50 million views</strong> in 24 hours. "Chalamet" trended globally in 47 countries simultaneously. King behaviour.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">REELZ</div>
+  <div class="footer-text">© 2025 REELZ Platform · Built with HTML, CSS & JavaScript · College Project by Soumya Thamke</div>
+</footer>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let autoplay;
+
+function goToSlide(n) {
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+  resetAutoplay();
+}
+
+function nextSlide() { goToSlide(current + 1); }
+function prevSlide() { goToSlide(current - 1); }
+
+function resetAutoplay() {
+  clearInterval(autoplay);
+  autoplay = setInterval(() => nextSlide(), 5000);
+}
+
+resetAutoplay();
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+});
+</script>
+
+</body>
+</html>
